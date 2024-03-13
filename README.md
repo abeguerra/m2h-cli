@@ -42,6 +42,8 @@ If installing from source
 
 ## Usage
 
+To transform a markdown string to html and see the produced html in a terminal, run:
 `m2h -md <markdown-string>`
 
+To transform a markdown file to a html file, run:
 `m2h -fin "./tests/transformations/sample4.txt" -fout "./tests/transformations/sample4.html"`
