@@ -1,0 +1,26 @@
+{
+  "name": "mailchimp-take-home",
+  "version": "1.0.0",
+  "description": "Markdown to HTML transformer",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha tests/**/*.spec.js",
+    "test:unit": "mocha tests/unit/**/*.spec.js",
+    "test:integration": "mocha tests/integration/**/*.spec.js"
+  },
+  "author": "Abe Guerra",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "commander": "12.0.0"
+  },
+  "devDependencies": {
+    "@types/chai": "4.3.12",
+    "@types/mocha": "10.0.6",
+    "chai": "5.1.0",
+    "mocha": "10.3.0"
+  },
+  "bin": {
+    "m2h": "./bin/m2h/index.js"
+  }
+}
