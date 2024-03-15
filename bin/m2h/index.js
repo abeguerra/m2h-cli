@@ -29,7 +29,7 @@ if (markdown) {
 if (fileIn && fileOut) {
     /* TODO
      * - handle errors
-     * - await this call so you can report status from here instead of procedure
      */ 
-    convertFileToHTML(fileIn, fileOut);
+    const res = await convertFileToHTML(fileIn, fileOut);
+    console.log(res);
 }

@@ -20,55 +20,69 @@ export const convertStringToHTML = (markdown) => {
 };
 
 export const convertFileToHTML = (markdownFile, htmlFile) => {
-    const rl = readline.createInterface({
-        input: fs.createReadStream(markdownFile)
-    });
-    const writeStream = fs.createWriteStream(htmlFile, { flags: 'w' });
+    return new Promise((resolve, reject) => {
+        const rl = readline.createInterface({
+            input: fs.createReadStream(markdownFile)
+        });
+        const writeStream = fs.createWriteStream(htmlFile, { flags: 'w' });
 
-    let prevLine = "";
-    let lineCount = 1;
-    const linesToDelete = [];
+        let prevLine = "";
+        let lineCount = 1;
+        const linesToDelete = [];
 
-    rl.on('line', (line) => {
-        let html = convertStringToHTML(line);
-        if (prevLine.endsWith("</p>") && html.startsWith("<p>")) {
-            html = prevLine.replace("</p>", "") + "<br>" + html.replace("<p>", "");
-            linesToDelete.push(lineCount - 1);
-        }
-        writeStream.write(html + "\n");
-        prevLine = html;
-        lineCount += 1;
-    });
+        rl.on("line", (line) => {
+            let html = convertStringToHTML(line);
+            if (prevLine.endsWith("</p>") && html.startsWith("<p>")) {
+                html = prevLine.replace("</p>", "") + "<br>" + html.replace("<p>", "");
+                linesToDelete.push(lineCount - 1);
+            }
+            writeStream.write(html + "\n");
+            prevLine = html;
+            lineCount += 1;
+        });
 
-    rl.on('close', () => {
-        writeStream.end();
-        deleteDupes(htmlFile, linesToDelete);
+        rl.on("close", async () => {
+            writeStream.end();
+            const res = await deleteDupes(htmlFile, linesToDelete);
+            // do some processing of res
+            resolve(res);
+        });
+
+        rl.on("error", (err) => {
+            resolve(err.message); // questionable
+        });
     });
 };
 
 const deleteDupes = (htmlFile, linesToDelete) => {
-    const rl = readline.createInterface({
-        input: fs.createReadStream(htmlFile)
-    });
-    const tempFile = `${htmlFile}.temp`;
-    const writeStream = fs.createWriteStream(tempFile);
+    return new Promise((resolve, reject) => {
+        const rl = readline.createInterface({
+            input: fs.createReadStream(htmlFile)
+        });
+        const tempFile = `${htmlFile}.temp`;
+        const writeStream = fs.createWriteStream(tempFile);
 
-    let lineCount = 1;
+        let lineCount = 1;
 
-    rl.on('line', (line) => {
-        if (!linesToDelete.includes(lineCount)) {
-            writeStream.write(line + '\n');
-        }
-        lineCount += 1;
-    });
-
-    rl.on('close', () => {
-        fs.rename(tempFile, htmlFile, (err) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(`${htmlFile} successfully created`);
+        rl.on("line", (line) => {
+            if (!linesToDelete.includes(lineCount)) {
+                writeStream.write(line + '\n');
             }
+            lineCount += 1;
+        });
+
+        rl.on("close", () => {
+            fs.rename(tempFile, htmlFile, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(`${htmlFile} successfully created`);
+                }
+            });
+        });
+
+        rl.on("error", (err) => {
+            reject(err.message);
         });
     });
 }
