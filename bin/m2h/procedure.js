@@ -43,13 +43,16 @@ export const convertFileToHTML = (markdownFile, htmlFile) => {
 
         rl.on("close", async () => {
             writeStream.end();
-            const res = await deleteDupes(htmlFile, linesToDelete);
-            // do some processing of res
-            resolve(res);
+            try {
+                const res = await deleteDupes(htmlFile, linesToDelete);
+                resolve(res);
+            } catch (err) {
+                reject(error);
+            }
         });
 
         rl.on("error", (err) => {
-            resolve(err.message); // questionable
+            reject(err);
         });
     });
 };

@@ -27,9 +27,10 @@ if (markdown) {
 }
 
 if (fileIn && fileOut) {
-    /* TODO
-     * - handle errors
-     */ 
-    const res = await convertFileToHTML(fileIn, fileOut);
-    console.log(res);
+    try {
+        const res = await convertFileToHTML(fileIn, fileOut);
+        console.log(res);
+    } catch(err) {
+        console.log(err.message);
+    }
 }
